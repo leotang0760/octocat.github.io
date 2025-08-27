@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务器管理面板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #4a6278;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .server-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            color: #27ae60;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #27ae60;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item:hover {
+            background: #4a6278;
+        }
+
+        .nav-item.active {
+            background: #3498db;
+        }
+
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .server-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .info-card h3 {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .info-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-weight: 500;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #27ae60;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            min-width: 80px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 4px;
+        }
+
+        .file-manager {
+            margin-top: 20px;
+        }
+
+        .file-list {
+            list-style: none;
+        }
+
+        .file-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border: 1px solid #ecf0f1;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .file-item:hover {
+            background: #f8f9fa;
+        }
+
+        .console {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>服务器管理面板</h2>
+                <div class="server-status">
+                    <div class="status-dot"></div>
+                    <span>运行中</span>
+                </div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item active" data-tab="overview">📊 总览</li>
+                <li class="nav-item" data-tab="configuration">⚙️ 服务器配置</li>
+                <li class="nav-item" data-tab="performance">📈 性能监控</li>
+                <li class="nav-item" data-tab="network">🌐 网络设置</li>
+                <li class="nav-item" data-tab="security">🔒 安全设置</li>
+                <li class="nav-item" data-tab="files">📁 文件管理</li>
+                <li class="nav-item" data-tab="console">💻 虚拟控制台</li>
+                <li class="nav-item" data-tab="backup">💾 备份恢复</li>
+                <li class="nav-item" data-tab="services">🔄 服务管理</li>
+                <li class="nav-item" data-tab="logs">📋 系统日志</li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>服务器管理控制台</h1>
+                <div>
+                    <button class="btn btn-danger" onclick="shutdownServer()">🔄 重启服务器</button>
+                    <button class="btn btn-danger" onclick="shutdownServer()">⏹️ 关闭服务器</button>
+                </div>
+            </div>
+
+            <div class="server-info">
+                <div class="info-card">
+                    <h3>CPU 使用率 i9-13600</h3>
+                    <div class="info-value">4.5%</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 24.5%"></div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>内存使用 128GB</h3>
+                    <div class="info-value">3.2GB / 128GB</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 20%"></div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>磁盘使用 NVMeSSD24TB</h3>
+                    <div class="info-value">177.2GB / 24TB</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 12.8%"></div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>网络流量 1GBps</h3>
+                    <div class="info-value">2.1MB/s</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 42%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content active" id="overview">
+                <div class="dashboard-grid">
+                    <div class="section">
+                        <h3>服务器信息</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">服务器名称</span>
+                            <span>麦块云TeaCoolServer-x9</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">操作系统</span>
+                            <span>windows Server 2025</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">内核版本</span>
+                            <span>windows Net core</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">运行时间</span>
+                            <span>4月 15天 8小时</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">供应商</span>
+                            <span>麦块云</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">实例类型</span>
+                            <span>ecs.g6.large</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">节点</span>
+                            <span>X9独享</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>快速操作</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <button class="btn btn-primary">🔄 重启服务</button>
+                            <button class="btn btn-success">📊 刷新状态</button>
+                            <button class="btn btn-primary">🔍 检查更新</button>
+                            <button class="btn btn-success">💾 创建备份</button>
+                            <button class="btn btn-primary">📋 查看日志</button>
+                            <button class="btn btn-success">🌐 网络诊断</button>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>服务状态</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">Nginx Web服务器</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">MySQL 数据库</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Redis 缓存</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Docker 服务</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+						<div class="setting-item">
+                            <span class="setting-label">java 虚拟机</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+						<div class="setting-item">
+                            <span class="setting-label">我的世界-性能优化</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="configuration">
+                <div class="dashboard-grid">
+                    <div class="section">
+                        <h3>系统配置</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">时区设置</span>
+                            <span>Asia/Shanghai (UTC+8)</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">语言环境</span>
+                            <span>zh_CN.UTF-8</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">SSH 端口</span>
+                            <span>22</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">最大连接数</span>
+                            <span>32767</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">交换分区</span>
+                            <span>2TB</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>网络配置</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">IP 地址</span>
+                            <span>192.168.1.150</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">子网掩码</span>
+                            <span>255.255.255.0</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">网关</span>
+                            <span>192.168.1.1</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">DNS 服务器</span>
+                            <span>8.8.8.8, 8.8.4.4</span>
+                        </div>
+						<div class="setting-item">
+                            <span class="setting-label">服务器域名</span>
+                            <span>mc.TeaCoolServer.top</span>
+                        </div>
+						<div class="setting-item">
+                            <span class="setting-label">宽带</span>
+                            <span>1GBps</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>性能配置</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">CPU 频率调节</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">内存压缩</span>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">磁盘缓存策略</span>
+                            <span>Writeback</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="files">
+                <div class="section">
+                    <h3>文件管理器</h3>
+                    <div style="margin-bottom: 20px;">
+                        <button class="btn btn-primary">📁 新建文件夹</button>
+                        <button class="btn btn-success">📤 上传文件</button>
+                        <button class="btn btn-primary">📥 下载选中</button>
+                        <button class="btn btn-danger">🗑️ 删除选中</button>
+                    </div>
+                    
+                    <div class="file-manager">
+						<ul class="file-list">
+							<li class="file-item">
+								<span>📁 wwwroot</span>
+								<span>6.1GB</span>
+								<span>2023-11-05 12:34</span>
+							</li>
+							<li class="file-item">
+								<span>📁 logs</span>
+								<span>512MB</span>
+								<span>2023-11-05 14:22</span>
+							</li>
+							<li class="file-item">
+								<span>📁 backups</span>
+								<span>7.3GB</span>
+								<span>2023-11-05 03:45</span>
+							</li>
+							<li class="file-item">
+								<span>📁 plugins</span>
+								<span>4.4GB</span>
+							</li>
+							<li class="file-item">
+								<span>📁 worlds</span>
+								<span>158.9GB</span>
+							</li>
+							<li class="file-item">
+								<span>📁 config</span>
+								<span>4.7MB</span>
+							</li>
+							<li class="file-item">
+								<span>📄 nginx.conf</span>
+								<span>2.4KB</span>
+							</li>
+							<li class="file-item">
+								<span>📄 my.cnf</span>
+								<span>3.1KB</span>
+							</li>
+							<li class="file-item">
+								<span>📄 server.properties</span>
+								<span>5.2KB</span>
+							</li>
+							<li class="file-item">
+								<span>📄 paper.yml</span>
+								<span>8.7KB</span>
+							</li>
+							<li class="file-item">
+								<span>📄 bukkit.yml</span>
+								<span>3.9KB</span>
+							</li>
+							<li class="file-item">
+								<span>📄 spigot.yml</span>
+								<span>6.2KB</span>
+							</li>
+							<li class="file-item">
+								<span>📄 paper-1.21.8-457.jar</span>
+								<span>45.7MB</span>
+							</li>
+							<li class="file-item">
+								<span>📄 start.sh</span>
+								<span>1.2KB</span>
+							</span>
+						</ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="console">
+                <div class="section">
+                    <h3>虚拟控制台</h3>
+                    <div style="margin-bottom: 20px;">
+                        <button class="btn btn-primary">🔌 连接</button>
+                        <button class="btn btn-success">📋 复制</button>
+                        <button class="btn btn-primary">🗑️ 清屏</button>
+                    </div>
+                    
+                    <div class="console" id="terminal">
+                        [root@server ~]# uptime<br>
+                        15:42:30 up 15 days,  8:12,  1 user,  load average: 0.12, 0.08, 0.06<br>
+                        [root@server ~]# free -h<br>
+                              total        used        free      shared  buff/cache   available<br>
+                        Mem:           15Gi       3.2Gi       9.8Gi       1.2Gi       2.0Gi        11Gi<br>
+                        Swap:         2.0Gi       0.0Gi       2.0Gi<br>
+                        [root@server ~]# 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function shutdownServer() {
+            if(confirm('确定要重启/关闭服务器吗？此操作将中断所有服务！')) {
+                alert('服务器重启命令已发送...');
+            }
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                const tabId = this.getAttribute('data-tab');
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        const metrics = {
+            cpu: { current: 4.5, selector: '[style*="width: 24.5%"]', max: 100 },
+            memory: { current: 3.2, selector: '[style*="width: 20%"]', max: 128 },
+            disk: { current: 177.2, selector: '[style*="width: 12.8%"]', max: 24000 },
+            network: { current: 2.1, selector: '[style*="width: 42%"]', max: 1024 }
+        };
+
+        function updateMetrics() {
+            Object.keys(metrics).forEach((key, index) => {
+                const metric = metrics[key];
+                const variation = Math.random() * 2 - 1;
+                metric.current = Math.max(0, Math.min(metric.current + variation, metric.max * 0.8));
+                
+                const percentage = (metric.current / metric.max * 100).toFixed(1);
+                const progressBar = document.querySelector(metric.selector);
+                const valueElement = document.querySelectorAll('.info-value')[index];
+                
+                if (progressBar) progressBar.style.width = percentage + '%';
+                if (valueElement) {
+                    if (key === 'cpu') {
+                        valueElement.textContent = percentage + '%';
+                    } else if (key === 'memory') {
+                        valueElement.textContent = metric.current.toFixed(1) + 'GB / ' + metric.max + 'GB';
+                    } else if (key === 'disk') {
+                        valueElement.textContent = metric.current.toFixed(1) + 'GB / ' + metric.max + 'GB';
+                    } else if (key === 'network') {
+                        valueElement.textContent = metric.current.toFixed(1) + 'MB/s';
+                    }
+                }
+            });
+        }
+
+        setInterval(updateMetrics, 2000);
+    </script>
+</body>
+</html>
