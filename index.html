@@ -3,54 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>服务器管理面板</title>
-    <style>
+    <title>LeafNode云服务器面板</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+        /* ===== 基础样式 ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #f5f7fa;
-            color: #333;
+        :root {
+            --primary-blue: #3498db;
+            --light-blue: #e7f2fa;
+            --dark-blue: #2980b9;
+            --accent-blue: #5dade2;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --white: #ffffff;
+            --light-gray: #f5f7fa;
+            --border-color: #e0e7ee;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --sidebar-width: 280px;
         }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ===== 布局样式 ===== */
         .dashboard {
-            display: grid;
-            grid-template-columns: 250px 1fr;
+            display: flex;
             min-height: 100vh;
         }
 
         .sidebar {
-            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-            color: white;
+            background: var(--white);
+            color: var(--text-dark);
             padding: 20px 0;
+            border-right: 1px solid var(--border-color);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.03);
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            z-index: 100;
         }
 
         .sidebar-header {
             padding: 20px;
-            border-bottom: 1px solid #4a6278;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
         }
 
         .sidebar-header h2 {
-            font-size: 1.2em;
-            margin-bottom: 5px;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: var(--primary-blue);
+            font-weight: 600;
         }
 
         .server-status {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             font-size: 0.9em;
-            color: #27ae60;
+            color: var(--success);
+            margin-top: 10px;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #27ae60;
+            width: 10px;
+            height: 10px;
+            background: var(--success);
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
@@ -63,94 +96,172 @@
 
         .nav-menu {
             list-style: none;
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         .nav-item {
-            padding: 12px 20px;
+            padding: 15px 25px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            font-size: 1em;
+            color: var(--text-dark);
+            border-left: 4px solid transparent;
         }
 
         .nav-item:hover {
-            background: #4a6278;
+            background: var(--light-blue);
+            border-left: 4px solid var(--accent-blue);
+            color: var(--primary-blue);
         }
 
         .nav-item.active {
-            background: #3498db;
+            background: var(--light-blue);
+            border-left: 4px solid var(--primary-blue);
+            color: var(--primary-blue);
+            font-weight: 500;
         }
 
         .main-content {
-            padding: 20px;
+            padding: 30px;
             overflow-y: auto;
+            background-color: var(--light-gray);
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            background: white;
+            padding: 20px 30px;
+            background: var(--white);
             border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
         }
 
+        .header h1 {
+            font-size: 1.8em;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+
+        /* ===== 卡片和内容样式 ===== */
         .server-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 35px;
         }
 
         .info-card {
-            background: white;
-            padding: 20px;
+            background: var(--white);
+            padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         }
 
         .info-card h3 {
-            color: #7f8c8d;
+            color: var(--text-light);
             font-size: 0.9em;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .info-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 1.8em;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #edf2f7;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue));
+            border-radius: 5px;
+            transition: width 0.5s ease;
         }
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
         }
 
         .section {
-            background: white;
+            background: var(--white);
             padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .section-full {
+            grid-column: 1 / -1;
         }
 
         .section h3 {
-            color: #2c3e50;
+            color: var(--text-dark);
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.2em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .setting-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #ecf0f1;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1em;
         }
 
         .setting-item:last-child {
@@ -159,13 +270,17 @@
 
         .setting-label {
             font-weight: 500;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .switch {
             position: relative;
             display: inline-block;
             width: 50px;
-            height: 24px;
+            height: 26px;
         }
 
         .switch input {
@@ -183,14 +298,14 @@
             bottom: 0;
             background-color: #ccc;
             transition: .4s;
-            border-radius: 24px;
+            border-radius: 26px;
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
+            height: 20px;
+            width: 20px;
             left: 3px;
             bottom: 3px;
             background-color: white;
@@ -199,34 +314,45 @@
         }
 
         input:checked + .slider {
-            background-color: #27ae60;
+            background-color: var(--primary-blue);
         }
 
         input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(24px);
         }
 
+        /* ===== 按钮样式 ===== */
         .btn {
-            padding: 8px 16px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s;
-            min-width: 80px;
+            min-width: 100px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.95em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
         }
 
         .btn-primary {
-            background: #3498db;
+            background: var(--primary-blue);
             color: white;
         }
 
         .btn-primary:hover {
-            background: #2980b9;
+            background: var(--dark-blue);
         }
 
         .btn-danger {
-            background: #e74c3c;
+            background: var(--danger);
             color: white;
         }
 
@@ -235,29 +361,24 @@
         }
 
         .btn-success {
-            background: #27ae60;
+            background: var(--success);
             color: white;
         }
 
         .btn-success:hover {
-            background: #229954;
+            background: #27ae60;
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #ecf0f1;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 5px;
+        .btn-warning {
+            background: var(--warning);
+            color: white;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #3498db, #2980b9);
-            border-radius: 4px;
+        .btn-warning:hover {
+            background: #e67e22;
         }
 
+        /* ===== 文件管理器样式 ===== */
         .file-manager {
             margin-top: 20px;
         }
@@ -270,370 +391,1644 @@
             display: grid;
             grid-template-columns: 1fr auto auto;
             align-items: center;
-            gap: 15px;
-            padding: 10px;
-            border: 1px solid #ecf0f1;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            font-size: 14px;
+            gap: 20px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 1em;
+            background: var(--white);
+            transition: background 0.2s;
         }
 
         .file-item:hover {
-            background: #f8f9fa;
+            background: var(--light-blue);
         }
 
+        /* ===== 控制台样式 ===== */
         .console {
-            background: #1e1e1e;
+            background: #1a1a1a;
             color: #00ff00;
             padding: 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             font-family: 'Courier New', monospace;
-            height: 300px;
+            height: 400px;
             overflow-y: auto;
             margin-top: 20px;
-            line-height: 1.4;
+            line-height: 1.5;
             white-space: pre-wrap;
+            border: 1px solid #333;
+            font-size: 1em;
         }
 
+        .console-command {
+            color: #ffff00;
+        }
+
+        .console-error {
+            color: #ff5555;
+        }
+
+        .console-warning {
+            color: #ffaa00;
+        }
+
+        /* ===== 标签内容样式 ===== */
         .tab-content {
             display: none;
+            animation: fadeIn 0.3s ease;
         }
 
         .tab-content.active {
             display: block;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ===== 玩家列表样式 ===== */
+        .player-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .player-card {
+            background: var(--white);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1em;
+            transition: transform 0.2s;
+        }
+
+        .player-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .player-avatar {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
+            background: var(--light-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .mc-button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .mc-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            border-radius: 6px;
+            font-size: 0.8em;
+            margin: 0 4px;
+        }
+
+        /* ===== 设置面板样式 ===== */
+        .settings-panel {
+            margin-top: 20px;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .settings-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .settings-group {
+            margin-bottom: 30px;
+        }
+
+        .group-title {
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.1em;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .status-on {
+            background-color: var(--success);
+        }
+
+        .status-off {
+            background-color: var(--danger);
+        }
+
+        .settings-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .last-saved {
+            color: var(--text-light);
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== 图表样式 ===== */
+        .chart-container {
+            width: 100%;
+            height: 250px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .chart {
+            width: 100%;
+            height: 100%;
+            background: var(--light-gray);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* ===== 世界管理样式 ===== */
+        .world-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .world-card {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+
+        .world-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .world-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .world-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 1.1em;
+        }
+
+        .world-size {
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .world-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .world-stat {
+            text-align: center;
+            padding: 12px;
+            background: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--primary-blue);
+            font-size: 1.2em;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: var(--text-light);
+        }
+
+        /* ===== 插件管理样式 ===== */
+        .plugin-list {
+            margin-top: 20px;
+        }
+
+        .plugin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: var(--white);
+        }
+
+        .plugin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .plugin-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--light-blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            font-size: 1.2em;
+        }
+
+        .plugin-details {
+            flex: 1;
+        }
+
+        .plugin-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 1.1em;
+        }
+
+        .plugin-version {
+            font-size: 0.9em;
+            color: var(--text-light);
+        }
+
+        .plugin-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ===== 备份样式 ===== */
+        .backup-list {
+            margin-top: 20px;
+        }
+
+        .backup-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: var(--white);
+        }
+
+        .backup-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 1.1em;
+        }
+
+        .backup-details {
+            font-size: 0.9em;
+            color: var(--text-light);
+        }
+
+        .backup-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ===== 日志样式 ===== */
+        .log-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .log-filter {
+            padding: 8px 16px;
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .log-filter.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .log-entries {
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            height: 500px;
+            overflow-y: auto;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            border: 1px solid #333;
+            font-size: 1em;
+        }
+
+        .log-date {
+            color: #7f8c8d;
+        }
+
+        .log-info {
+            color: #3498db;
+        }
+
+        .log-warn {
+            color: #f39c12;
+        }
+
+        .log-error {
+            color: #e74c3c;
+        }
+
+        .log-debug {
+            color: #9b59b6;
+        }
+
+        /* ===== 工具类 ===== */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ===== 滚动条样式 ===== */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
     </style>
 </head>
 <body>
+    <!-- 移动端菜单按钮 -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <div class="dashboard">
-        <div class="sidebar">
+        <!-- 侧边栏导航 -->
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2>服务器管理面板</h2>
+                <h2>LeafNode云服务器面板</h2>
                 <div class="server-status">
                     <div class="status-dot"></div>
-                    <span>运行中</span>
+                    <span id="server-status-text">运行中</span>
                 </div>
             </div>
             
             <ul class="nav-menu">
-                <li class="nav-item active" data-tab="overview">📊 总览</li>
-                <li class="nav-item" data-tab="configuration">⚙️ 服务器配置</li>
-                <li class="nav-item" data-tab="performance">📈 性能监控</li>
-                <li class="nav-item" data-tab="network">🌐 网络设置</li>
-                <li class="nav-item" data-tab="security">🔒 安全设置</li>
-                <li class="nav-item" data-tab="files">📁 文件管理</li>
-                <li class="nav-item" data-tab="console">💻 虚拟控制台</li>
-                <li class="nav-item" data-tab="backup">💾 备份恢复</li>
-                <li class="nav-item" data-tab="services">🔄 服务管理</li>
-                <li class="nav-item" data-tab="logs">📋 系统日志</li>
+                <li class="nav-item active" data-tab="overview"><i class="fas fa-chart-bar"></i> 服务器总览</li>
+                <li class="nav-item" data-tab="players"><i class="fas fa-users"></i> 玩家管理</li>
+                <li class="nav-item" data-tab="configuration"><i class="fas fa-cog"></i> 服务器配置</li>
+                <li class="nav-item" data-tab="performance"><i class="fas fa-tachometer-alt"></i> 性能监控</li>
+                <li class="nav-item" data-tab="worlds"><i class="fas fa-globe"></i> 世界管理</li>
+                <li class="nav-item" data-tab="plugins"><i class="fas fa-puzzle-piece"></i> 插件管理</li>
+                <li class="nav-item" data-tab="files"><i class="fas fa-folder"></i> 文件管理</li>
+                <li class="nav-item" data-tab="console"><i class="fas fa-terminal"></i> 控制台</li>
+                <li class="nav-item" data-tab="backup"><i class="fas fa-database"></i> 备份恢复</li>
+                <li class="nav-item" data-tab="logs"><i class="fas fa-clipboard-list"></i> 服务器日志</li>
             </ul>
         </div>
 
+        <!-- 主内容区域 -->
         <div class="main-content">
+            <!-- 顶部标题和操作按钮 -->
             <div class="header">
-                <h1>服务器管理控制台</h1>
+                <h1>TeaCoolServer 服务器控制台</h1>
                 <div>
-                    <button class="btn btn-danger" onclick="shutdownServer()">🔄 重启服务器</button>
-                    <button class="btn btn-danger" onclick="shutdownServer()">⏹️ 关闭服务器</button>
+                    <button class="btn btn-success" onclick="sendCommand('say 服务器将在30秒后重启!')">
+                        <i class="fas fa-bullhorn"></i> 广播消息
+                    </button>
+                    <button class="btn btn-primary" onclick="sendCommand('save-all')">
+                        <i class="fas fa-save"></i> 保存世界
+                    </button>
+                    <button class="btn btn-danger" onclick="restartServer()">
+                        <i class="fas fa-redo"></i> 重启服务器
+                    </button>
+                    <button class="btn btn-danger" onclick="shutdownServer()">
+                        <i class="fas fa-power-off"></i> 关闭服务器
+                    </button>
                 </div>
             </div>
 
+            <!-- 服务器信息卡片 -->
             <div class="server-info">
                 <div class="info-card">
                     <h3>CPU 使用率 i9-13600</h3>
-                    <div class="info-value">4.5%</div>
+                    <div class="info-value" id="cpu-usage">4.5%</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 24.5%"></div>
+                        <div class="progress-fill" id="cpu-progress" style="width: 4.5%"></div>
                     </div>
                 </div>
                 <div class="info-card">
                     <h3>内存使用 128GB</h3>
-                    <div class="info-value">3.2GB / 128GB</div>
+                    <div class="info-value" id="memory-usage">3.2GB / 128GB</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 20%"></div>
+                        <div class="progress-fill" id="memory-progress" style="width: 2.5%"></div>
                     </div>
                 </div>
                 <div class="info-card">
-                    <h3>磁盘使用 NVMeSSD24TB</h3>
-                    <div class="info-value">177.2GB / 24TB</div>
+                    <h3>硬盘容量 24TB</h3>
+                    <div class="info-value" id="disk-usage">985.2GB / 24576GB</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 12.8%"></div>
+                        <div class="progress-fill" id="disk-progress" style="width: 4%"></div>
                     </div>
                 </div>
                 <div class="info-card">
-                    <h3>网络流量 1GBps</h3>
-                    <div class="info-value">2.1MB/s</div>
+                    <h3>TPS (每秒刻数)</h3>
+                    <div class="info-value" id="tps-value">19.8</div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 42%"></div>
+                        <div class="progress-fill" id="tps-progress" style="width: 99%"></div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>在线玩家</h3>
+                    <div class="info-value" id="online-players">4/20</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="players-progress" style="width: 20%"></div>
                     </div>
                 </div>
             </div>
 
+            <!-- 服务器总览页面 -->
             <div class="tab-content active" id="overview">
                 <div class="dashboard-grid">
+                    <!-- 服务器信息 -->
                     <div class="section">
-                        <h3>服务器信息</h3>
+                        <h3><i class="fas fa-server"></i> 服务器信息</h3>
                         <div class="setting-item">
-                            <span class="setting-label">服务器名称</span>
-                            <span>麦块云TeaCoolServer-x9</span>
-                        </div>
-                        <div class="setting-item">
-                            <span class="setting-label">操作系统</span>
-                            <span>windows Server 2025</span>
-                        </div>
-                        <div class="setting-item">
-                            <span class="setting-label">内核版本</span>
-                            <span>windows Net core</span>
+                            <span class="setting-label">服务器版本</span>
+                            <span>Paper 1.20.4~1.21.8</span>
                         </div>
                         <div class="setting-item">
                             <span class="setting-label">运行时间</span>
-                            <span>4月 15天 8小时</span>
+                            <span id="uptime">4天 15小时 28分</span>
                         </div>
+                        <div class="setting-item">
+                            <span class="setting-label">世界数量</span>
+                            <span>3</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">插件数量</span>
+                            <span>12</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">游戏模式</span>
+                            <span>生存</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">难度</span>
+                            <span>困难</span>
+                        </div>
+                    </div>
+
+                    <!-- 快速操作 -->
+                    <div class="section">
+                        <h3><i class="fas fa-bolt"></i> 快速操作</h3>
+                        <div class="mc-button-group">
+                            <button class="btn btn-primary" onclick="sendCommand('time set day')">
+                                <i class="fas fa-sun"></i> 设置为白天
+                            </button>
+                            <button class="btn btn-primary" onclick="sendCommand('weather clear')">
+                                <i class="fas fa-cloud-sun"></i> 晴天
+                            </button>
+                            <button class="btn btn-primary" onclick="sendCommand('gamerule doDaylightCycle true')">
+                                <i class="fas fa-clock"></i> 恢复时间流动
+                            </button>
+                            <button class="btn btn-success" onclick="sendCommand('say 服务器维护中...')">
+                                <i class="fas fa-bullhorn"></i> 维护广播
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 服务器网络信息 -->
+                    <div class="section">
+                        <h3><i class="fas fa-network-wired"></i> 服务器网络信息</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">服务器地址</span>
+                            <span>mc.TeaCoolServer.top</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">服务器备用地址</span>
+                            <span>mc.TeaCoolServer.com</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">服务器公网地址</span>
+                            <span>125.765.654.23</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">服务器协议</span>
+                            <span>TCP/UDP</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">服务器IP数(总数/已用/未用)</span>
+                            <span>10/3/7</span>
+                        </div>
+                    </div>
+
+                    <!-- 产品信息 -->
+                    <div class="section">
+                        <h3><i class="fas fa-info-circle"></i> 产品信息</h3>
                         <div class="setting-item">
                             <span class="setting-label">供应商</span>
                             <span>麦块云</span>
                         </div>
                         <div class="setting-item">
-                            <span class="setting-label">实例类型</span>
-                            <span>ecs.g6.large</span>
+                            <span class="setting-label">产品ID</span>
+                            <span>314353465</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">产品类型</span>
+                            <span>麦块云独享服务器-企业级游戏云款</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">服务器系统</span>
+                            <span>Ubuntu Server 24.04 LTS-LeafNode服务器面板</span>
                         </div>
                         <div class="setting-item">
                             <span class="setting-label">节点</span>
-                            <span>X9独享</span>
+                            <span>x1独享节点-麦块MAX会员</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">产品到期时间</span>
+                            <span>长期</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">产品等级</span>
+                            <span>x1-麦块MAX会员-独享服务器</span>
                         </div>
                     </div>
 
+                    <!-- 服务器配置 -->
                     <div class="section">
-                        <h3>快速操作</h3>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <button class="btn btn-primary">🔄 重启服务</button>
-                            <button class="btn btn-success">📊 刷新状态</button>
-                            <button class="btn btn-primary">🔍 检查更新</button>
-                            <button class="btn btn-success">💾 创建备份</button>
-                            <button class="btn btn-primary">📋 查看日志</button>
-                            <button class="btn btn-success">🌐 网络诊断</button>
+                        <h3><i class="fas fa-microchip"></i> 服务器配置</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">CPU</span>
+                            <span>i9-13600 24C/32线程</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">运行内存</span>
+                            <span>128GB DDR5</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">硬盘</span>
+                            <span>24TB NVMe SSD</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">宽带</span>
+                            <span>1GBps 独享宽带 x1节点</span>
                         </div>
                     </div>
 
+                    <!-- 服务器高级设置 -->
                     <div class="section">
-                        <h3>服务状态</h3>
-                        <div class="setting-item">
-                            <span class="setting-label">Nginx Web服务器</span>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="setting-item">
-                            <span class="setting-label">MySQL 数据库</span>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="setting-item">
-                            <span class="setting-label">Redis 缓存</span>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="setting-item">
-                            <span class="setting-label">Docker 服务</span>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-						<div class="setting-item">
-                            <span class="setting-label">java 虚拟机</span>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-						<div class="setting-item">
-                            <span class="setting-label">我的世界-性能优化</span>
-                            <label class="switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
+                        <h3><i class="fas fa-cogs"></i> 服务器高级设置</h3>
+                        <div class="settings-panel">
+                            <div class="settings-header">
+                                <h2><i class="fas fa-cog"></i> 设置选项</h2>
+                                <div class="actions">
+                                    <button class="btn btn-primary" onclick="selectAll()">
+                                        <i class="fas fa-check-square"></i> 全选
+                                    </button>
+                                    <button class="btn btn-danger" onclick="deselectAll()">
+                                        <i class="fas fa-times-circle"></i> 取消全选
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-body">
+                                <div class="settings-column">
+                                    <div class="settings-group">
+                                        <h3 class="group-title"><i class="fas fa-network-wired"></i> 网络设置</h3>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-exchange-alt"></i> 启用NAT网络技术
+                                                <span class="status-indicator status-on" id="nat-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="NAT" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-lock"></i> 启用HTTPS网站协议
+                                                <span class="status-indicator status-off" id="https-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="HTTPS">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-wifi"></i> 启用TCP/UDP协议
+                                                <span class="status-indicator status-on" id="tcp-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="TCP/UDP" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-globe"></i> 启用DNS协议
+                                                <span class="status-indicator status-on" id="dns-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="DNS" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="settings-group">
+                                        <h3 class="group-title"><i class="fas fa-shield-alt"></i> 安全设置</h3>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-lock"></i> 启用SSL证书
+                                                <span class="status-indicator status-on" id="ssl-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="SSL" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-shield-virus"></i> 启用服务器保护协议
+                                                <span class="status-indicator status-on" id="safe-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="safe" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="settings-column">
+                                    <div class="settings-group">
+                                        <h3 class="group-title"><i class="fas fa-tachometer-alt"></i> 性能优化</h3>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fab fa-java"></i> 启用java虚拟机
+                                                <span class="status-indicator status-on" id="java-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="Java" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-tachometer-alt"></i> 启用网络优化协议
+                                                <span class="status-indicator status-on" id="en-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="EN" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-server"></i> 启用服务器优化协议
+                                                <span class="status-indicator status-on" id="server-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="server" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-memory"></i> 启用内存自动释放
+                                                <span class="status-indicator status-off" id="ram-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="RAM">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="settings-group">
+                                        <h3 class="group-title"><i class="fas fa-gamepad"></i> 游戏设置</h3>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-cloud"></i> 启用Web服务
+                                                <span class="status-indicator status-off" id="web-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="Web">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="setting-item">
+                                            <span class="setting-label">
+                                                <i class="fas fa-cube"></i> 启用我的世界优化
+                                                <span class="status-indicator status-on" id="mc-status"></span>
+                                            </span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="mc" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-footer">
+                                <div class="btn-group">
+                                    <button class="btn btn-primary" onclick="saveConfig()">
+                                        <i class="fas fa-save"></i> 保存设置
+                                    </button>
+                                    <button class="btn btn-success" onclick="resetToDefault()">
+                                        <i class="fas fa-undo"></i> 恢复默认
+                                    </button>
+                                </div>
+                                
+                                <div class="last-saved">
+                                    <i class="far fa-clock"></i>
+                                    <span id="last-saved-time">从未保存</span>
+                                </div>
+                                
+                                <div class="btn-group">
+                                    <button class="btn btn-primary" onclick="exportConfig()">
+                                        <i class="fas fa-download"></i> 导出配置
+                                    </button>
+                                    <button class="btn btn-success" onclick="importConfig()">
+                                        <i class="fas fa-upload"></i> 导入配置
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- 玩家管理页面 -->
+            <div class="tab-content" id="players">
+                <div class="section">
+                    <h3><i class="fas fa-users"></i> 在线玩家 (4)</h3>
+                    <div class="player-list">
+                        <div class="player-card">
+                            <div class="player-avatar">P1</div>
+                            <div>Player1</div>
+                            <div class="mc-badge">生存</div>
+                        </div>
+                        <div class="player-card">
+                            <div class="player-avatar">N</div>
+                            <div>Notch</div>
+                            <div class="mc-badge">创造</div>
+                        </div>
+                        <div class="player-card">
+                            <div class="player-avatar">S</div>
+                            <div>Steve</div>
+                            <div class="mc-badge">冒险</div>
+                        </div>
+                        <div class="player-card">
+                            <div class="player-avatar">A</div>
+                            <div>Alex</div>
+                            <div class="mc-badge">观察者</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 20px;"><i class="fas fa-cog"></i> 玩家管理</h3>
+                    <div class="mc-button-group">
+                        <button class="btn btn-primary" onclick="sendCommand('gamemode survival @a')">
+                            <i class="fas fa-user"></i> 全部设为生存
+                        </button>
+                        <button class="btn btn-primary" onclick="sendCommand('gamemode creative @a')">
+                            <i class="fas fa-user"></i> 全部设为创造
+                        </button>
+                        <button class="btn btn-success" onclick="sendCommand('effect give @a minecraft:saturation 10 1')">
+                            <i class="fas fa-utensils"></i> 给予饱食
+                        </button>
+                        <button class="btn btn-danger" onclick="sendCommand('kick @a')">
+                            <i class="fas fa-door-open"></i> 踢出所有玩家
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 服务器配置页面 -->
             <div class="tab-content" id="configuration">
                 <div class="dashboard-grid">
                     <div class="section">
-                        <h3>系统配置</h3>
+                        <h3><i class="fas fa-server"></i> 服务器配置</h3>
                         <div class="setting-item">
-                            <span class="setting-label">时区设置</span>
-                            <span>Asia/Shanghai (UTC+8)</span>
+                            <span class="setting-label">服务器端口</span>
+                            <span>25565</span>
                         </div>
                         <div class="setting-item">
-                            <span class="setting-label">语言环境</span>
-                            <span>zh_CN.UTF-8</span>
+                            <span class="setting-label">视距</span>
+                            <span>32</span>
                         </div>
                         <div class="setting-item">
-                            <span class="setting-label">SSH 端口</span>
-                            <span>22</span>
+                            <span class="setting-label">模拟距离</span>
+                            <span>24</span>
                         </div>
                         <div class="setting-item">
-                            <span class="setting-label">最大连接数</span>
-                            <span>32767</span>
+                            <span class="setting-label">最大玩家数</span>
+                            <span>67</span>
                         </div>
                         <div class="setting-item">
-                            <span class="setting-label">交换分区</span>
-                            <span>2TB</span>
+                            <span class="setting-label">正版验证</span>
+                            <label class="switch">
+                                <input type="checkbox" id="online-mode-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
                         </div>
                     </div>
 
                     <div class="section">
-                        <h3>网络配置</h3>
+                        <h3><i class="fas fa-globe"></i> 世界设置</h3>
                         <div class="setting-item">
-                            <span class="setting-label">IP 地址</span>
-                            <span>192.168.1.150</span>
-                        </div>
-                        <div class="setting-item">
-                            <span class="setting-label">子网掩码</span>
-                            <span>255.255.255.0</span>
+                            <span class="setting-label">世界种子</span>
+                            <span>-8416376683577556495</span>
                         </div>
                         <div class="setting-item">
-                            <span class="setting-label">网关</span>
-                            <span>192.168.1.1</span>
-                        </div>
-                        <div class="setting-item">
-                            <span class="setting-label">DNS 服务器</span>
-                            <span>8.8.8.8, 8.8.4.4</span>
-                        </div>
-						<div class="setting-item">
-                            <span class="setting-label">服务器域名</span>
-                            <span>mc.TeaCoolServer.top</span>
-                        </div>
-						<div class="setting-item">
-                            <span class="setting-label">宽带</span>
-                            <span>1GBps</span>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <h3>性能配置</h3>
-                        <div class="setting-item">
-                            <span class="setting-label">CPU 频率调节</span>
+                            <span class="setting-label">生成结构</span>
                             <label class="switch">
                                 <input type="checkbox" checked>
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="setting-item">
-                            <span class="setting-label">内存压缩</span>
+                            <span class="setting-label">允许下界</span>
                             <label class="switch">
-                                <input type="checkbox">
+                                <input type="checkbox" checked>
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="setting-item">
-                            <span class="setting-label">磁盘缓存策略</span>
-                            <span>Writeback</span>
+                            <span class="setting-label">允许末地</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3><i class="fas fa-tachometer-alt"></i> 性能配置</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">实体激活范围</span>
+                            <span>512</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">自动保存间隔</span>
+                            <span>1分钟</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">网络压缩阈值</span>
+                            <span>1024</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">生成区块限制</span>
+                            <span>64</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="tab-content" id="files">
-                <div class="section">
-                    <h3>文件管理器</h3>
-                    <div style="margin-bottom: 20px;">
-                        <button class="btn btn-primary">📁 新建文件夹</button>
-                        <button class="btn btn-success">📤 上传文件</button>
-                        <button class="btn btn-primary">📥 下载选中</button>
-                        <button class="btn btn-danger">🗑️ 删除选中</button>
+            <!-- 性能监控页面 -->
+            <div class="tab-content" id="performance">
+                <div class="dashboard-grid">
+                    <div class="section">
+                        <h3><i class="fas fa-microchip"></i> CPU 使用率</h3>
+                        <div class="chart-container">
+                            <canvas id="cpu-chart"></canvas>
+                        </div>
                     </div>
                     
-                    <div class="file-manager">
-						<ul class="file-list">
-							<li class="file-item">
-								<span>📁 wwwroot</span>
-								<span>6.1GB</span>
-								<span>2023-11-05 12:34</span>
-							</li>
-							<li class="file-item">
-								<span>📁 logs</span>
-								<span>512MB</span>
-								<span>2023-11-05 14:22</span>
-							</li>
-							<li class="file-item">
-								<span>📁 backups</span>
-								<span>7.3GB</span>
-								<span>2023-11-05 03:45</span>
-							</li>
-							<li class="file-item">
-								<span>📁 plugins</span>
-								<span>4.4GB</span>
-							</li>
-							<li class="file-item">
-								<span>📁 worlds</span>
-								<span>158.9GB</span>
-							</li>
-							<li class="file-item">
-								<span>📁 config</span>
-								<span>4.7MB</span>
-							</li>
-							<li class="file-item">
-								<span>📄 nginx.conf</span>
-								<span>2.4KB</span>
-							</li>
-							<li class="file-item">
-								<span>📄 my.cnf</span>
-								<span>3.1KB</span>
-							</li>
-							<li class="file-item">
-								<span>📄 server.properties</span>
-								<span>5.2KB</span>
-							</li>
-							<li class="file-item">
-								<span>📄 paper.yml</span>
-								<span>8.7KB</span>
-							</li>
-							<li class="file-item">
-								<span>📄 bukkit.yml</span>
-								<span>3.9KB</span>
-							</li>
-							<li class="file-item">
-								<span>📄 spigot.yml</span>
-								<span>6.2KB</span>
-							</li>
-							<li class="file-item">
-								<span>📄 paper-1.21.8-457.jar</span>
-								<span>45.7MB</span>
-							</li>
-							<li class="file-item">
-								<span>📄 start.sh</span>
-								<span>1.2KB</span>
-							</span>
-						</ul>
+                    <div class="section">
+                        <h3><i class="fas fa-memory"></i> 内存使用情况</h3>
+                        <div class="chart-container">
+                            <canvas id="memory-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3><i class="fas fa-hdd"></i> 磁盘 I/O</h3>
+                        <div class="chart-container">
+                            <canvas id="disk-io-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3><i class="fas fa-network-wired"></i> 网络流量</h3>
+                        <div class="chart-container">
+                            <canvas id="network-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3><i class="fas fa-history"></i> 性能历史记录</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">记录时长</span>
+                            <span>30天</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">数据采样间隔</span>
+                            <span>5分钟</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">数据存储位置</span>
+                            <span>/var/log/leafnode/metrics</span>
+                        </div>
+                        <div class="mc-button-group mt-20">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-download"></i> 导出数据
+                            </button>
+                            <button class="btn btn-success">
+                                <i class="fas fa-chart-line"></i> 生成报告
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- 世界管理页面 -->
+            <div class="tab-content" id="worlds">
+                <div class="dashboard-grid">
+                    <div class="section">
+                        <h3><i class="fas fa-globe"></i> 世界列表</h3>
+                        <div class="world-grid">
+                            <div class="world-card">
+                                <div class="world-header">
+                                    <div class="world-name">world</div>
+                                    <div class="world-size">12.5GB</div>
+                                </div>
+                                <div>主世界 - 默认世界</div>
+                                <div class="world-stats">
+                                    <div class="world-stat">
+                                        <div class="stat-value">4</div>
+                                        <div class="stat-label">在线玩家</div>
+                                    </div>
+                                    <div class="world-stat">
+                                        <div class="stat-value">1,245</div>
+                                        <div class="stat-label">已加载区块</div>
+                                    </div>
+                                </div>
+                                <div class="mc-button-group mt-20">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-download"></i> 备份
+                                    </button>
+                                    <button class="btn btn-success">
+                                        <i class="fas fa-cog"></i> 设置
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="world-card">
+                                <div class="world-header">
+                                    <div class="world-name">world_nether</div>
+                                    <div class="world-size">3.2GB</div>
+                                </div>
+                                <div>下界 - 地狱世界</div>
+                                <div class="world-stats">
+                                    <div class="world-stat">
+                                        <div class="stat-value">1</div>
+                                        <div class="stat-label">在线玩家</div>
+                                    </div>
+                                    <div class="world-stat">
+                                        <div class="stat-value">587</div>
+                                        <div class="stat-label">已加载区块</div>
+                                    </div>
+                                </div>
+                                <div class="mc-button-group mt-20">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-download"></i> 备份
+                                    </button>
+                                    <button class="btn btn-success">
+                                        <i class="fas fa-cog"></i> 设置
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="world-card">
+                                <div class="world-header">
+                                    <div class="world-name">world_the_end</div>
+                                    <div class="world-size">2.1GB</div>
+                                </div>
+                                <div>末地 - 终末之地</div>
+                                <div class="world-stats">
+                                    <div class="world-stat">
+                                        <div class="stat-value">0</div>
+                                        <div class="stat-label">在线玩家</div>
+                                    </div>
+                                    <div class="world-stat">
+                                        <div class="stat-value">324</div>
+                                        <div class="stat-label">已加载区块</div>
+                                    </div>
+                                </div>
+                                <div class="mc-button-group mt-20">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-download"></i> 备份
+                                    </button>
+                                    <button class="btn btn-success">
+                                        <i class="fas fa-cog"></i> 设置
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3><i class="fas fa-plus-circle"></i> 创建新世界</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">世界名称</span>
+                            <input type="text" placeholder="输入世界名称" style="padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">世界类型</span>
+                            <select style="padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option>普通</option>
+                                <option>超平坦</option>
+                                <option>放大化</option>
+                                <option>大型生物群系</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">世界种子</span>
+                            <input type="text" placeholder="留空随机" style="padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">生成结构</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <button class="btn btn-success mt-20">
+                            <i class="fas fa-plus"></i> 创建世界
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 插件管理页面 -->
+            <div class="tab-content" id="plugins">
+                <div class="dashboard-grid">
+                    <div class="section">
+                        <h3><i class="fas fa-puzzle-piece"></i> 已安装插件 (12)</h3>
+                        <div class="plugin-list">
+                            <div class="plugin-item">
+                                <div class="plugin-info">
+                                    <div class="plugin-icon">W</div>
+                                    <div class="plugin-details">
+                                        <div class="plugin-name">WorldEdit</div>
+                                        <div class="plugin-version">v7.2.12</div>
+                                    </div>
+                                </div>
+                                <div class="plugin-actions">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="plugin-item">
+                                <div class="plugin-info">
+                                    <div class="plugin-icon">E</div>
+                                    <div class="plugin-details">
+                                        <div class="plugin-name">EssentialsX</div>
+                                        <div class="plugin-version">v2.19.7</div>
+                                    </div>
+                                </div>
+                                <div class="plugin-actions">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="plugin-item">
+                                <div class="plugin-info">
+                                    <div class="plugin-icon">L</div>
+                                    <div class="plugin-details">
+                                        <div class="plugin-name">LuckPerms</div>
+                                        <div class="plugin-version">v5.4.72</div>
+                                    </div>
+                                </div>
+                                <div class="plugin-actions">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="plugin-item">
+                                <div class="plugin-info">
+                                    <div class="plugin-icon">V</div>
+                                    <div class="plugin-details">
+                                        <div class="plugin-name">Vault</div>
+                                        <div class="plugin-version">v1.7.3</div>
+                                    </div>
+                                </div>
+                                <div class="plugin-actions">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-cog"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3><i class="fas fa-plus-circle"></i> 安装新插件</h3>
+                        <div style="margin-bottom: 20px;">
+                            <p>上传插件文件 (.jar)</p>
+                            <input type="file" accept=".jar" style="margin-top: 10px;">
+                        </div>
+                        <div class="mc-button-group">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-upload"></i> 上传插件
+                            </button>
+                            <button class="btn btn-success">
+                                <i class="fas fa-sync"></i> 重新加载插件
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3><i class="fas fa-info-circle"></i> 插件信息</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">插件目录</span>
+                            <span>/plugins</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">插件数量</span>
+                            <span>12</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">启用插件</span>
+                            <span>10</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">禁用插件</span>
+                            <span>2</span>
+                        </div>
+                        <div class="mc-button-group mt-20">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-list"></i> 查看全部
+                            </button>
+                            <button class="btn btn-success">
+                                <i class="fas fa-check"></i> 启用全部
+                            </button>
+                            <button class="btn btn-danger">
+                                <i class="fas fa-ban"></i> 禁用全部
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文件管理页面 -->
+            <div class="tab-content" id="files">
+                <div class="section">
+                    <h3><i class="fas fa-folder"></i> 文件管理器</h3>
+                    <div style="margin-bottom: 20px;">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-folder-plus"></i> 新建文件夹
+                        </button>
+                        <button class="btn btn-success">
+                            <i class="fas fa-upload"></i> 上传文件
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-download"></i> 下载选中
+                        </button>
+                        <button class="btn btn-danger">
+                            <i class="fas fa-trash"></i> 删除选中
+                        </button>
+                    </div>
+                    
+                    <div class="file-manager">
+                        <ul class="file-list">
+                            <li class="file-item">
+                                <span>📁 LeafNode服务器面板</span>
+                                <span>8.9GB</span>
+                                <span>2023-11-05 03:45</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📁 wwwroot</span>
+                                <span>1.4GB</span>
+                                <span>2023-11-05 03:45</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📁 system</span>
+                                <span>6.92GB</span>
+                                <span>2023-11-05 03:45</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📁 服务器环境</span>
+                                <span>18.2GB</span>
+                                <span>2025-10-05 03:45</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📁 worlds</span>
+                                <span>158.9GB</span>
+                                <span>2023-11-05 03:45</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📁 plugins</span>
+                                <span>4.4GB</span>
+                                <span>2023-11-05 12:34</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📁 config</span>
+                                <span>4.7MB</span>
+                                <span>2023-11-05 14:22</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📄 server.properties</span>
+                                <span>5.2KB</span>
+                                <span>2023-11-05 14:22</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📄 paper.yml</span>
+                                <span>8.7KB</span>
+                                <span>2023-11-05 14:22</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📄 bukkit.yml</span>
+                                <span>3.9KB</span>
+                                <span>2023-11-05 14:22</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📄 spigot.yml</span>
+                                <span>6.2KB</span>
+                                <span>2023-11-05 14:22</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📄 paper-1.21.8-456.jar</span>
+                                <span>45.7MB</span>
+                                <span>2023-11-05 14:22</span>
+                            </li>
+                            <li class="file-item">
+                                <span>📄 start.sh</span>
+                                <span>1.2KB</span>
+                                <span>2023-11-05 14:22</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制台页面 -->
             <div class="tab-content" id="console">
                 <div class="section">
-                    <h3>虚拟控制台</h3>
+                    <h3><i class="fas fa-terminal"></i> 服务器控制台</h3>
                     <div style="margin-bottom: 20px;">
-                        <button class="btn btn-primary">🔌 连接</button>
-                        <button class="btn btn-success">📋 复制</button>
-                        <button class="btn btn-primary">🗑️ 清屏</button>
+                        <input type="text" id="command-input" placeholder="输入Minecraft命令..." style="
+                            padding: 8px;
+                            border: 2px solid #ddd;
+                            background: #1a1a1a;
+                            color: #00ff00;
+                            font-family: 'Courier New', monospace;
+                            width: 60%;
+                            margin-right: 10px;
+                            border-radius: 4px;
+                        ">
+                        <button class="btn btn-success" onclick="executeCommand()">
+                            <i class="fas fa-play"></i> 执行命令
+                        </button>
+                        <button class="btn btn-primary" onclick="clearConsole()">
+                            <i class="fas fa-broom"></i> 清屏
+                        </button>
                     </div>
                     
                     <div class="console" id="terminal">
-                        [root@server ~]# uptime<br>
-                        15:42:30 up 15 days,  8:12,  1 user,  load average: 0.12, 0.08, 0.06<br>
-                        [root@server ~]# free -h<br>
-                              total        used        free      shared  buff/cache   available<br>
-                        Mem:           15Gi       3.2Gi       9.8Gi       1.2Gi       2.0Gi        11Gi<br>
-                        Swap:         2.0Gi       0.0Gi       2.0Gi<br>
-                        [root@server ~]# 
+                        [15:42:30 INFO]: Done (15.789s)! For help, type "help"<br>
+                        [15:42:30 INFO]: Loaded 12 plugins<br>
+                        [15:42:30 INFO]: Starting minecraft server on *:25565<br>
+                        [15:42:30 INFO]: This server is running Paper version 1.20.1 (git-Paper-456)<br>
+                        [15:42:31 INFO]: Player1 joined the game<br>
+                        [15:42:35 INFO]: Notch joined the game<br>
+                        [15:43:10 INFO]: Steve joined the game<br>
+                        [15:43:45 INFO]: Alex joined the game<br>
+                        [15:45:20 INFO]: Saving chunks for level 'world'/overworld<br>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 备份恢复页面 -->
+            <div class="tab-content" id="backup">
+                <div class="dashboard-grid">
+                    <div class="section">
+                        <h3><i class="fas fa-database"></i> 备份列表</h3>
+                        <div class="backup-list">
+                            <div class="backup-item">
+                                <div>
+                                    <div class="backup-name">backup_20231105_full</div>
+                                    <div class="backup-details">158.9GB • 2023-11-05 03:45</div>
+                                </div>
+                                <div>完整备份</div>
+                                <div class="backup-actions">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-success btn-sm">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="backup-item">
+                                <div>
+                                    <div class="backup-name">backup_20231104_inc</div>
+                                    <div class="backup-details">45.2GB • 2023-11-04 03:45</div>
+                                </div>
+                                <div>增量备份</div>
+                                <div class="backup-actions">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-success btn-sm">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="backup-item">
+                                <div>
+                                    <div class="backup-name">backup_20231103_inc</div>
+                                    <div class="backup-details">38.7GB • 2023-11-03 03:45</div>
+                                </div>
+                                <div>增量备份</div>
+                                <div class="backup-actions">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-success btn-sm">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3><i class="fas fa-plus-circle"></i> 创建备份</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">备份类型</span>
+                            <select style="padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option>完整备份</option>
+                                <option>增量备份</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">包含世界</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">包含插件</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">包含配置</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">压缩备份</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <button class="btn btn-success mt-20">
+                            <i class="fas fa-plus"></i> 创建备份
+                        </button>
+                    </div>
+                    
+                    <div class="section">
+                        <h3><i class="fas fa-cog"></i> 备份设置</h3>
+                        <div class="setting-item">
+                            <span class="setting-label">自动备份</span>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">备份间隔</span>
+                            <span>24小时</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">保留备份数</span>
+                            <span>7</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">备份目录</span>
+                            <span>/backups</span>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">上次备份</span>
+                            <span>2023-11-05 03:45</span>
+                        </div>
+                        <div class="mc-button-group mt-20">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-sync"></i> 立即备份
+                            </button>
+                            <button class="btn btn-success">
+                                <i class="fas fa-cog"></i> 配置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 服务器日志页面 -->
+            <div class="tab-content" id="logs">
+                <div class="section">
+                    <h3><i class="fas fa-clipboard-list"></i> 服务器日志</h3>
+                    
+                    <div class="log-filters">
+                        <div class="log-filter active">全部</div>
+                        <div class="log-filter">信息</div>
+                        <div class="log-filter">警告</div>
+                        <div class="log-filter">错误</div>
+                        <div class="log-filter">调试</div>
+                    </div>
+                    
+                    <div class="log-entries">
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:42:30] </span>
+                            <span class="log-info">INFO</span>: Done (15.789s)! For help, type "help"
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:42:30] </span>
+                            <span class="log-info">INFO</span>: Loaded 12 plugins
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:42:30] </span>
+                            <span class="log-info">INFO</span>: Starting minecraft server on *:25565
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:42:30] </span>
+                            <span class="log-info">INFO</span>: This server is running Paper version 1.20.1 (git-Paper-456)
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:42:31] </span>
+                            <span class="log-info">INFO</span>: Player1 joined the game
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:42:35] </span>
+                            <span class="log-info">INFO</span>: Notch joined the game
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:43:10] </span>
+                            <span class="log-info">INFO</span>: Steve joined the game
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:43:45] </span>
+                            <span class="log-info">INFO</span>: Alex joined the game
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:45:20] </span>
+                            <span class="log-info">INFO</span>: Saving chunks for level 'world'/overworld
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:46:10] </span>
+                            <span class="log-warn">WARN</span>: Can't keep up! Is the server overloaded?
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:47:22] </span>
+                            <span class="log-error">ERROR</span>: Unable to load chunk [12, 45] in world 'world'
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-date">[2023-11-05 15:48:30] </span>
+                            <span class="log-debug">DEBUG</span>: Entity count: 245
+                        </div>
+                    </div>
+                    
+                    <div class="mc-button-group mt-20">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-download"></i> 下载日志
+                        </button>
+                        <button class="btn btn-success">
+                            <i class="fas fa-sync"></i> 刷新
+                        </button>
+                        <button class="btn btn-danger">
+                            <i class="fas fa-trash"></i> 清空日志
+                        </button>
                     </div>
                 </div>
             </div>
@@ -641,12 +2036,339 @@
     </div>
 
     <script>
-        function shutdownServer() {
-            if(confirm('确定要重启/关闭服务器吗？此操作将中断所有服务！')) {
-                alert('服务器重启命令已发送...');
+        // ===== 配置管理 =====
+        // 配置项ID列表
+        const configIds = [
+            'Java', 'NAT', 'HTTPS', 'TCP/UDP', 'DNS', 'SSL', 'Web', 'EN', 'server', 'mc', 'RAM', 'safe'
+        ,'online-mode-toggle'];
+        
+        // 页面加载时加载配置
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+            updateStatusIndicators();
+            initializeCharts();
+            
+            // 为所有开关添加事件监听器
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', saveConfig);
+            });
+            
+            // 为命令输入框添加回车键支持
+            document.getElementById('command-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    executeCommand();
+                }
+            });
+            
+            // 更新指标
+            setInterval(updateMetrics, 2000);
+        });
+        
+        // 保存配置到本地存储
+        function saveConfig() {
+            const config = {};
+            
+            configIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    config[id] = element.checked;
+                }
+            });
+            
+            config.lastUpdate = new Date().getTime();
+            localStorage.setItem('serverConfig', JSON.stringify(config));
+            
+            // 更新最后保存时间
+            document.getElementById('last-saved-time').textContent = new Date().toLocaleString();
+            
+            // 显示保存成功提示
+            showNotification('设置已成功保存！');
+            
+            // 更新状态指示器
+            updateStatusIndicators();
+        }
+        
+        // 从本地存储加载配置
+        function loadConfig() {
+            const savedConfig = localStorage.getItem('serverConfig');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                
+                configIds.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element && config[id] !== undefined) {
+                        element.checked = config[id];
+                    }
+                });
+                
+                // 显示最后保存时间
+                if (config.lastUpdate) {
+                    document.getElementById('last-saved-time').textContent = new Date(config.lastUpdate).toLocaleString();
+                }
+            }
+        }
+        
+        // 更新状态指示器
+        function updateStatusIndicators() {
+            configIds.forEach(id => {
+                const element = document.getElementById(id);
+                const statusElement = document.getElementById(`${id.toLowerCase().replace('/', '-')}-status`);
+                
+                if (element && statusElement) {
+                    if (element.checked) {
+                        statusElement.className = 'status-indicator status-on';
+                    } else {
+                        statusElement.className = 'status-indicator status-off';
+                    }
+                }
+            });
+        }
+        
+        // 全选
+        function selectAll() {
+            configIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.checked = true;
+                }
+            });
+            updateStatusIndicators();
+            showNotification('已全部启用');
+        }
+        
+        // 取消全选
+        function deselectAll() {
+            configIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.checked = false;
+                }
+            });
+            updateStatusIndicators();
+            showNotification('已全部禁用');
+        }
+        
+        // 重置为默认设置
+        function resetToDefault() {
+            // 默认设置
+            document.getElementById('Java').checked = true;
+            document.getElementById('NAT').checked = true;
+            document.getElementById('HTTPS').checked = false;
+            document.getElementById('TCP/UDP').checked = true;
+            document.getElementById('DNS').checked = true;
+            document.getElementById('SSL').checked = true;
+            document.getElementById('Web').checked = false;
+            document.getElementById('EN').checked = true;
+            document.getElementById('server').checked = true;
+            document.getElementById('mc').checked = true;
+            document.getElementById('RAM').checked = false;
+            document.getElementById('safe').checked = true;
+            
+            updateStatusIndicators();
+            showNotification('已恢复默认设置');
+        }
+        
+        // 导出配置
+        function exportConfig() {
+            const config = {};
+            
+            configIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    config[id] = element.checked;
+                }
+            });
+            
+            const dataStr = JSON.stringify(config, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'server-config.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('配置已导出');
+        }
+        
+        // 导入配置
+        function importConfig() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        const config = JSON.parse(e.target.result);
+                        
+                        configIds.forEach(id => {
+                            const element = document.getElementById(id);
+                            if (element && config[id] !== undefined) {
+                                element.checked = config[id];
+                            }
+                        });
+                        
+                        updateStatusIndicators();
+                        showNotification('配置已导入');
+                    } catch (error) {
+                        showNotification('导入失败：文件格式错误', true);
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // 显示通知
+        function showNotification(message, isError = false) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '5px';
+            notification.style.color = 'white';
+            notification.style.backgroundColor = isError ? '#e74c3c' : '#2ecc71';
+            notification.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.2)';
+            notification.style.zIndex = '1000';
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.3s';
+            
+            document.body.appendChild(notification);
+            
+            // 显示通知
+            setTimeout(() => {
+                notification.style.opacity = '1';
+            }, 10);
+            
+            // 3秒后隐藏并移除通知
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // ===== 服务器控制功能 =====
+        // 发送服务器命令
+        function sendCommand(command) {
+            addToConsole(`[ADMIN] ${command}`);
+            // 模拟命令执行
+            setTimeout(() => {
+                addToConsole(`[SERVER] 执行命令: ${command}`);
+            }, 500);
+        }
+
+        // 执行命令
+        function executeCommand() {
+            const commandInput = document.getElementById('command-input');
+            if (commandInput.value.trim() !== '') {
+                sendCommand(commandInput.value);
+                commandInput.value = '';
             }
         }
 
+        // 添加内容到控制台
+        function addToConsole(text) {
+            const consoleElement = document.getElementById('terminal');
+            consoleElement.innerHTML += `<br>${text}`;
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+        }
+
+        // 清空控制台
+        function clearConsole() {
+            document.getElementById('terminal').innerHTML = '';
+        }
+
+        // 关闭服务器
+        function shutdownServer() {
+            if(confirm('确定要关闭服务器吗？这将断开所有玩家的连接！')) {
+                addToConsole('[SERVER] 正在关闭服务器...');
+                document.getElementById('server-status-text').textContent = '已关闭';
+                document.querySelector('.status-dot').style.background = '#e53935';
+                document.querySelector('.status-dot').style.animation = 'none';
+            }
+        }
+
+        // 重启服务器
+        function restartServer() {
+            if(confirm('确定要重启服务器吗？这将断开所有玩家的连接！')) {
+                addToConsole('[SERVER] 正在重启服务器...');
+                document.getElementById('server-status-text').textContent = '重启中';
+                document.querySelector('.status-dot').style.background = '#ffeb3b';
+                
+                // 模拟重启过程
+                setTimeout(() => {
+                    document.getElementById('server-status-text').textContent = '运行中';
+                    document.querySelector('.status-dot').style.background = '#27ae60';
+                    document.querySelector('.status-dot').style.animation = 'pulse 2s infinite';
+                    addToConsole('[SERVER] 服务器启动完成!');
+                }, 3000);
+            }
+        }
+
+        // ===== 性能指标 =====
+        const metrics = {
+            cpu: { current: 4.5, selector: '#cpu-progress', max: 400 },
+            memory: { current: 3.2, selector: '#memory-progress', max: 128 },
+            disk: { current: 985.6, selector: '#disk-progress', max: 24576 },
+            tps: { current: 19.8, selector: '#tps-progress', max: 20 },
+            players: { current: 4, selector: '#players-progress', max: 67 }
+        };
+
+        // 更新性能指标
+        function updateMetrics() {
+            // 更新CPU使用率
+            metrics.cpu.current = Math.max(2, Math.min(metrics.cpu.current + (Math.random() * 4 - 2), 25));
+            const cpuPercentage = (metrics.cpu.current / metrics.cpu.max * 100).toFixed(1);
+            document.querySelector(metrics.cpu.selector).style.width = cpuPercentage + '%';
+            document.getElementById('cpu-usage').textContent = metrics.cpu.current.toFixed(1) + '%';
+            
+            // 更新内存使用
+            metrics.memory.current = Math.max(2.5, Math.min(metrics.memory.current + (Math.random() * 0.4 - 0.2), 5));
+            const memoryPercentage = (metrics.memory.current / metrics.memory.max * 100).toFixed(1);
+            document.querySelector(metrics.memory.selector).style.width = memoryPercentage + '%';
+            document.getElementById('memory-usage').textContent = metrics.memory.current.toFixed(1) + 'GB / ' + metrics.memory.max + 'GB';
+            
+            // 更新磁盘使用
+            metrics.disk.current = Math.max(985.6, Math.min(metrics.disk.current + (Math.random() * 0.4 - 0.2), 990));
+            const diskPercentage = (metrics.disk.current / metrics.disk.max * 100).toFixed(1);
+            document.querySelector(metrics.disk.selector).style.width = diskPercentage + '%';
+            document.getElementById('disk-usage').textContent = metrics.disk.current.toFixed(1) + 'GB / ' + metrics.disk.max + 'GB';
+            
+            // 更新TPS
+            metrics.tps.current = Math.max(18.5, Math.min(metrics.tps.current + (Math.random() * 0.4 - 0.2), 20));
+            const tpsPercentage = (metrics.tps.current / metrics.tps.max * 100).toFixed(1);
+            document.querySelector(metrics.tps.selector).style.width = tpsPercentage + '%';
+            document.getElementById('tps-value').textContent = metrics.tps.current.toFixed(1);
+            
+            // 更新在线玩家
+            document.getElementById('online-players').textContent = metrics.players.current + '/' + metrics.players.max;
+            const playersPercentage = (metrics.players.current / metrics.players.max * 100).toFixed(1);
+            document.querySelector(metrics.players.selector).style.width = playersPercentage + '%';
+            
+            // 保存当前状态
+            saveConfig();
+        }
+
+        // ===== 图表初始化 =====
+        function initializeCharts() {
+            // 这里只是模拟图表初始化
+            // 实际使用时可以集成Chart.js或其他图表库
+            console.log("图表初始化完成");
+        }
+
+        // ===== 标签切换功能 =====
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function() {
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -658,39 +2380,22 @@
             });
         });
 
-        const metrics = {
-            cpu: { current: 4.5, selector: '[style*="width: 24.5%"]', max: 100 },
-            memory: { current: 3.2, selector: '[style*="width: 20%"]', max: 128 },
-            disk: { current: 177.2, selector: '[style*="width: 12.8%"]', max: 24000 },
-            network: { current: 2.1, selector: '[style*="width: 42%"]', max: 1024 }
-        };
-
-        function updateMetrics() {
-            Object.keys(metrics).forEach((key, index) => {
-                const metric = metrics[key];
-                const variation = Math.random() * 2 - 1;
-                metric.current = Math.max(0, Math.min(metric.current + variation, metric.max * 0.8));
-                
-                const percentage = (metric.current / metric.max * 100).toFixed(1);
-                const progressBar = document.querySelector(metric.selector);
-                const valueElement = document.querySelectorAll('.info-value')[index];
-                
-                if (progressBar) progressBar.style.width = percentage + '%';
-                if (valueElement) {
-                    if (key === 'cpu') {
-                        valueElement.textContent = percentage + '%';
-                    } else if (key === 'memory') {
-                        valueElement.textContent = metric.current.toFixed(1) + 'GB / ' + metric.max + 'GB';
-                    } else if (key === 'disk') {
-                        valueElement.textContent = metric.current.toFixed(1) + 'GB / ' + metric.max + 'GB';
-                    } else if (key === 'network') {
-                        valueElement.textContent = metric.current.toFixed(1) + 'MB/s';
-                    }
-                }
-            });
+        // ===== 移动端菜单切换 =====
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
         }
 
-        setInterval(updateMetrics, 2000);
+        // ===== 日志过滤功能 =====
+        document.querySelectorAll('.log-filter').forEach(filter => {
+            filter.addEventListener('click', function() {
+                document.querySelectorAll('.log-filter').forEach(f => f.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 这里可以添加实际的日志过滤逻辑
+                console.log("筛选日志: " + this.textContent);
+            });
+        });
     </script>
 </body>
 </html>
